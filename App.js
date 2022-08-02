@@ -1,9 +1,9 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { useFonts } from "expo-font";
 import Form from "./screen/Form";
-import { NativeBaseProvider, extendTheme } from "native-base";
+import Toast from "react-native-toast-message";
 
 export default function App() {
   const [loaded] = useFonts({
@@ -11,23 +11,16 @@ export default function App() {
     PoppinsBold: require("./assets/fonts/Poppins-Bold.ttf"),
     PoppinsMeduim: require("./assets/fonts/Poppins-Medium.ttf"),
   });
-  const newColorTheme = {
-    brand: {
-      800: "#ffffff",
-    },
-  };
 
-  const theme = extendTheme({
-    colors: newColorTheme,
-  });
   if (!loaded) {
     return null;
   }
 
   return (
-    <NativeBaseProvider theme={theme}>
+    <SafeAreaProvider>
       <Form />
-    </NativeBaseProvider>
+      <Toast />
+    </SafeAreaProvider>
   );
 }
 

@@ -1,28 +1,31 @@
-import { View, ScrollView, StyleSheet } from "react-native";
+import { View, ScrollView, StyleSheet, ActivityIndicator } from "react-native";
 import React, { useState } from "react";
 import { HeaderComponent } from "../components/Header";
 import { Input } from "../components/Input";
 import Button from "../components/Button";
 import { Colors } from "../theme/Color";
-import Select from "react-select";
+import Toast from "react-native-toast-message";
 import { Picker } from "@react-native-picker/picker";
 import OwnText from "../components/Text/OwnText";
 import { collection, addDoc, getFirestore, getDoc } from "firebase/firestore";
 import { app } from "../firebase/Firebase.init";
-
 export default function Form() {
   const [name, setName] = useState(null);
   const [phoneNum, setPhoneNum] = useState(null);
   const [address, setAddress] = useState(null);
+
   const [NameError, setNameError] = useState(false);
   const [PhoneError, setPhoneError] = useState(false);
   const [AddressError, setAddressError] = useState(false);
-  const [gender, setGender] = React.useState("");
+  const [gender, setGender] = React.useState("Male");
+  const [loading, setLoading] = useState(false);
 
   const db = getFirestore(app);
 
   const handleSubmit = async () => {
+    console.log(gender);
     if (name || phoneNum || address) {
+      setLoading(true);
       try {
         const docRef = await addDoc(collection(db, "user"), {
           name: name,
@@ -31,10 +34,15 @@ export default function Form() {
           gender: gender,
         });
         if (docRef) {
+          Toast.show({
+            type: "success",
+            text1: "Profile added successfully",
+          });
         }
       } catch (error) {
         console.log("object", error);
       }
+      setLoading(false);
     } else {
       if (!name) setNameError(true);
       if (!phoneNum) setPhoneError(true);
@@ -124,11 +132,24 @@ export default function Form() {
               placeholder="Gender"
               onValueChange={(itemValue, itemIndex) => setGender(itemValue)}
             >
-              <Picker.Item label="Male" value="male" />
-              <Picker.Item label="Female" value="female" />
+              <Picker.Item label="Male" value="Male" />
+              <Picker.Item label="Female" value="Female" />
             </Picker>
           </View>
-          <Button onPress={handleSubmit} title={"Submit"} />
+          {loading ? (
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: 20,
+              }}
+            >
+              <ActivityIndicator size="large" color={Colors.primary} />
+            </View>
+          ) : (
+            <Button onPress={handleSubmit} title={"Submit"} />
+          )}
         </View>
       </ScrollView>
     </>
