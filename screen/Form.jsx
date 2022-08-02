@@ -7,6 +7,8 @@ import { Colors } from "../theme/Color";
 import Select from "react-select";
 import { Picker } from "@react-native-picker/picker";
 import OwnText from "../components/Text/OwnText";
+import { collection, addDoc, getFirestore, getDoc } from "firebase/firestore";
+import { app } from "../firebase/Firebase.init";
 
 export default function Form() {
   const [name, setName] = useState(null);
@@ -17,13 +19,32 @@ export default function Form() {
   const [AddressError, setAddressError] = useState(false);
   const [gender, setGender] = React.useState("");
 
-  const handleSubmit = () => {
-    if (name || phoneNum || address) {
-    } else {
-      if (!name) setNameError(true);
-      if (!phoneNum) setPhoneError(true);
-      if (!address) setAddressError(true);
+  const db = getFirestore(app);
+
+  const handleSubmit = async () => {
+    // const profile = doc(firestore);
+    try {
+      const docRef = await addDoc(collection(db, "user"), {
+        name: name,
+        number: phoneNum,
+        address: address,
+        gender: gender,
+      });
+      if (docRef) {
+      }
+    } catch (error) {
+      console.log("object", error);
     }
+    // if (name || phoneNum || address) {
+    // const docRef = await addDoc(collection(profile, "cities"), {
+    //   name: "Tokyo",
+    //   country: "Japan",
+    // });
+    // } else {
+    // if (!name) setNameError(true);
+    // if (!phoneNum) setPhoneError(true);
+    // if (!address) setAddressError(true);
+    // }
   };
 
   const handleBlur = (e, setValue, f2, count) => {
@@ -94,9 +115,9 @@ export default function Form() {
                 preset={"medium"}
                 style={{ color: Colors.primary, marginTop: 8 }}
               >
-                {AddressError?.length == 0 || !AddressError
-                  ? "Phone Number Field is required"
-                  : "Phone Number must be at least 10 numbers"}
+                {address?.length == 0 || !AddressError
+                  ? "Adress Field is required"
+                  : "Adress must be at least 10 numbers"}
               </OwnText>
             )}
           </View>
