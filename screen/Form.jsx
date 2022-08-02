@@ -22,29 +22,24 @@ export default function Form() {
   const db = getFirestore(app);
 
   const handleSubmit = async () => {
-    // const profile = doc(firestore);
-    try {
-      const docRef = await addDoc(collection(db, "user"), {
-        name: name,
-        number: phoneNum,
-        address: address,
-        gender: gender,
-      });
-      if (docRef) {
+    if (name || phoneNum || address) {
+      try {
+        const docRef = await addDoc(collection(db, "user"), {
+          name: name,
+          number: phoneNum,
+          address: address,
+          gender: gender,
+        });
+        if (docRef) {
+        }
+      } catch (error) {
+        console.log("object", error);
       }
-    } catch (error) {
-      console.log("object", error);
+    } else {
+      if (!name) setNameError(true);
+      if (!phoneNum) setPhoneError(true);
+      if (!address) setAddressError(true);
     }
-    // if (name || phoneNum || address) {
-    // const docRef = await addDoc(collection(profile, "cities"), {
-    //   name: "Tokyo",
-    //   country: "Japan",
-    // });
-    // } else {
-    // if (!name) setNameError(true);
-    // if (!phoneNum) setPhoneError(true);
-    // if (!address) setAddressError(true);
-    // }
   };
 
   const handleBlur = (e, setValue, f2, count) => {
